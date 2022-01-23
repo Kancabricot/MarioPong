@@ -113,9 +113,9 @@ class Tableau1 extends Phaser.Scene {
     }
 
     win(joueur){
-        //alert('Joueur '+joueur.name+' gagne')
+
         joueur.score ++;
-        //alert('Le score est de '+this.joueurGauche.score+' a '+this.joueurDroite.score)
+
         this.balleAucentre();
     }
 

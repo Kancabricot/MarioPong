@@ -1,10 +1,15 @@
 class Tableau1 extends Phaser.Scene {
     preload() {
+        // le preload des images
         this.load.image('square','assets/carre.png');
         this.load.image('barre','assets/barre.png');
         this.load.image('circle','assets/cercle.png');
         this.load.image('fond','assets/fond.png');
 
+        // le preload des sons
+        this.load.audio('jump', 'assets/son/jump.wav')
+        this.load.audio('coin', 'assets/son/coin.wav')
+        this.load.audio('ball', 'assets/son/ball.wav')
     }
 
 
@@ -12,6 +17,15 @@ class Tableau1 extends Phaser.Scene {
         this.hauteur=500;
         this.largeur=1000;
 
+        //Son
+        this.coin= this.sound.add('coin', {loop: false});
+        this.coin.volume = 1
+
+        this.jump= this.sound.add('jump', {loop: false});
+        this.jump.volume = 0.8
+
+        this.ball= this.sound.add('ball', {loop: false});
+        this.ball.volume = 0.8
 
         //Fond
         this.add.image(0, 0, 'fond').setOrigin(0, 0);
@@ -38,10 +52,6 @@ class Tableau1 extends Phaser.Scene {
         this.bas.body.setAllowGravity(false);
         this.bas.setImmovable(true);
 
-        //Collision
-        this.physics.add.collider(this.balle,this.bas);
-        this.physics.add.collider(this.balle,this.haut);
-
         //Raquettes balle/murs
         this.gauche = this.physics.add.sprite(25, 200,'square').setOrigin(0, 0);
         this.gauche.setVelocityY(0);
@@ -54,16 +64,26 @@ class Tableau1 extends Phaser.Scene {
         this.droite.setImmovable(true);
 
         let me = this;
+
+        //Collision
+        this.physics.add.collider(this.balle,this.bas, function(){
+            me.ball.play()
+        });
+        this.physics.add.collider(this.balle,this.bas);
+
+        this.physics.add.collider(this.balle,this.haut, function(){
+            me.ball.play()
+        });
+        this.physics.add.collider(this.balle,this.haut);
+
         //Collision raquettes/balle
         this.physics.add.collider(this.balle,this.gauche, function(){
-            console.log("touche gauche");
             me.rebond(me.gauche);
         });
 
         this.physics.add.collider(this.balle,this.gauche);
 
         this.physics.add.collider(this.balle,this.droite, function(){
-            console.log("touche droit");
             me.rebond(me.droite);
         });
 
@@ -71,7 +91,6 @@ class Tableau1 extends Phaser.Scene {
 
         this.joueurGauche = new Joueur('Mario','joueurGauche');
         this.joueurDroite = new Joueur('Luigi','joueurDroite');
-        console.log(this.joueurGauche);
 
         this.balleAucentre();
 
@@ -87,6 +106,7 @@ class Tableau1 extends Phaser.Scene {
 
         let me=this;
 
+        this.jump.play()
         console.log(raquette.y)
         console.log(me.balle.y)
         console.log((me.balle.y)-(raquette.y))
@@ -98,7 +118,6 @@ class Tableau1 extends Phaser.Scene {
         positionRelativeRaquette = (positionRelativeRaquette/hauteurRaquette);
 
         positionRelativeRaquette = (positionRelativeRaquette*2-1);
-        console.log(positionRelativeRaquette);
 
         this.balle.setVelocityY( this.balle.body.velocity.y + positionRelativeRaquette * hauteurRaquette)
     }
@@ -115,8 +134,9 @@ class Tableau1 extends Phaser.Scene {
     win(joueur){
 
         joueur.score ++;
-
+        this.coin.play()
         this.balleAucentre();
+
     }
 
     initKeyboard() {

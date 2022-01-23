@@ -1,11 +1,15 @@
 body{
-    font-family: Arial, sans-serif;
-    font-size: 12px;
-    background-color: #ffdddd;
+    font-family: Impact, DejaVu Sans;
+    font-size: 14px;
+    background-color: #520960;
     text-align: center;
+    background-image:url(https://www.wallpaperkiss.com/wimg/b/139-1394070_big.jpg);
+    background-position:100% 50%;
+
+
 }
 a{
-    color: #808080;
+    color: #ffffff;
     text-transform: uppercase;
     text-decoration: none;
     transition: color 1s;
@@ -27,4 +31,24 @@ a:visited{
 }
 canvas{
     outline: 1px solid #333;
+}
+#scores{
+    color: #ff0000;
+    font-size : 3vw;
+    display: flex;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    width: 100%;
+}
+
+.score{
+    color: #ffffff
+}
+.name{
+    font-size: 3vw;
+}
+
+#scores >* {
+    margin: 1vw;
 }

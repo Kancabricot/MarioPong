@@ -1,119 +1,117 @@
-class Tableau1 extends Phaser.Scene{
-
-
-    preload(){
+class Tableau1 extends Phaser.Scene {
+    preload() {
         this.load.image('square','assets/carre.png');
+        this.load.image('barre','assets/barre.png');
         this.load.image('circle','assets/cercle.png');
+        this.load.image('fond','assets/fond.png');
+
     }
 
-    create(){
+
+    create() {
+        this.hauteur=500;
+        this.largeur=1000;
 
 
-        this.hauteur = 500
-        this.largeur = 1000
-        this.speedX = 0
-        while(this.speedX===0){
-            this.speedX = 500*Phaser.Math.Between(-1,1)
-        }
-        this.speedY = Phaser.Math.Between(-500, 500)
-        this.maxspeed = 500
+        //Fond
+        this.add.image(0, 0, 'fond').setOrigin(0, 0);
 
-        this.balle = this.physics.add.sprite(this.largeur/2, this.hauteur/2, 'circle')
-        this.balle.setDisplaySize(20, 20)
-        this.balle.body.setBounce(1,1);
+        //Balle
+        this.balle = this.physics.add.sprite(this.largeur/2, this.hauteur/2, 'circle').setOrigin(0, 0);
+        this.balle.setDisplaySize(20,20);
+        this.balle.body.setBounce(1.1,1.1);
+        this.balle.setVelocityX(Phaser.Math.Between(-600,600));
+        this.balle.setVelocityY(Phaser.Math.Between(300,350));
+        this.balle.body.setMaxVelocityX(500);
+        this.balle.body.setMaxVelocityY(700);
         this.balle.body.setAllowGravity(false)
 
-        this.haut = this.physics.add.sprite(0, 0, 'square').setOrigin(0, 0)
-        this.haut.setDisplaySize(this.largeur, 20)
-        this.haut.body.setAllowGravity(false)
+        //Mur haut
+        this.haut = this.physics.add.sprite(0, 0,'barre').setOrigin(0, 0);
+        this.haut.setDisplaySize(this.largeur,20);
+        this.haut.body.setAllowGravity(false);
         this.haut.setImmovable(true);
-        this.bas = this.physics.add.sprite(0, 480, 'square').setOrigin(0, 0)
-        this.bas.setDisplaySize(this.largeur, 20)
-        this.bas.body.setAllowGravity(false)
+
+        //Mur bas
+        this.bas = this.physics.add.sprite(0, this.hauteur-20,'barre').setOrigin(0, 0);
+        this.bas.setDisplaySize(this.largeur,20);
+        this.bas.body.setAllowGravity(false);
         this.bas.setImmovable(true);
-        this.player1 = this.physics.add.sprite(50, 360, 'square')
-        this.player1.setDisplaySize(20, 100)
-        this.player1.body.setAllowGravity(false)
-        this.player2 = this.physics.add.sprite(920, 360, 'square')
-        this.player2.setDisplaySize(20, 100)
-        this.player2.body.setAllowGravity(false)
-        this.player1.setImmovable(true)
-        this.player2.setImmovable(true)
+
+        //Collision
+        this.physics.add.collider(this.balle,this.bas);
+        this.physics.add.collider(this.balle,this.haut);
+
+        //Raquettes balle/murs
+        this.gauche = this.physics.add.sprite(25, 200,'square').setOrigin(0, 0);
+        this.gauche.setVelocityY(0);
+        this.gauche.body.setAllowGravity(false);
+        this.gauche.setImmovable(true);
+
+        this.droite = this.physics.add.sprite(955, 200,'square').setOrigin(0, 0);
+        this.droite.setVelocityY(0);
+        this.droite.body.setAllowGravity(false);
+        this.droite.setImmovable(true);
 
         let me = this;
-        this.physics.add.collider(this.player1, this.balle,function(){
-            console.log('touche player 1')
-            me.rebond(me.player1)
-        })
-        this.physics.add.collider(this.player2, this.balle,function(){
-            console.log('touche player 2')
-            me.rebond(me.player2)
-        })
+        //Collision raquettes/balle
+        this.physics.add.collider(this.balle,this.gauche, function(){
+            console.log("touche gauche");
+            me.rebond(me.gauche);
+        });
 
-        this.physics.add.collider(this.balle, this.bas)
-        this.physics.add.collider(this.balle, this.haut)
+        this.physics.add.collider(this.balle,this.gauche);
 
-        this.balle.setMaxVelocity(this.maxspeed,this.maxspeed)
+        this.physics.add.collider(this.balle,this.droite, function(){
+            console.log("touche droit");
+            me.rebond(me.droite);
+        });
 
-        this.physics.add.collider(this.haut, this.player1)
-        this.physics.add.collider(this.bas, this.player1)
+        this.physics.add.collider(this.balle,this.droite);
 
-        this.physics.add.collider(this.haut, this.player2)
-        this.physics.add.collider(this.bas, this.player2)
-
-        this.player1Speed = 0
-        this.player2Speed = 0
-
-        if(this.balle<0)
-        {
-            this.scoreplayer2 +=1;
-            this.textplayer1.setText('Player 1 = ' + this.scoreplayer1);
-
-        }
-
-        if(this.balle>this.largeur)
-        {
-            this.scoreplayer1  +=1;
-            this.textplayer2.setText('Player 2 = ' + this.scoreplayer2);
-        }
-
-
-        this.joueurGauche = new Joueur('Robert','joueurGauche')
-        this.joueurDroite = new Joueur('Jean marie','joueurDroite')
-        console.log(this.joueurGauche)
+        this.joueurGauche = new Joueur('Mario','joueurGauche');
+        this.joueurDroite = new Joueur('Luigi','joueurDroite');
+        console.log(this.joueurGauche);
 
         this.balleAucentre();
-        this.initKeyboard()
+
+        this.initKeyboard();
     }
 
-    rebond(players){
-        let me = this ;
-        console.log(this.player1.y);
-        console.log(me.balle.y);
-        let hauteurPlayers = players.displayHeight;
 
-        let positionRelativePlayers = (this.balle.y - players.y);
 
-        positionRelativePlayers= (positionRelativePlayers / hauteurPlayers)
-        positionRelativePlayers = positionRelativePlayers*2-1;
 
-        this.balle.setVelocityY(this.balle.body.velocity.y + positionRelativePlayers * 50);
 
+    rebond(raquette){
+
+
+        let me=this;
+
+        console.log(raquette.y)
+        console.log(me.balle.y)
+        console.log((me.balle.y)-(raquette.y))
+
+        let hauteurRaquette = raquette.displayHeight;
+
+        let positionRelativeRaquette =(this.balle.y-raquette.y);
+
+        positionRelativeRaquette = (positionRelativeRaquette/hauteurRaquette);
+
+        positionRelativeRaquette = (positionRelativeRaquette*2-1);
+        console.log(positionRelativeRaquette);
+
+        this.balle.setVelocityY( this.balle.body.velocity.y + positionRelativeRaquette * hauteurRaquette)
     }
 
     balleAucentre(){
         this.balle.x = this.largeur/2
         this.balle.y = this.hauteur/2
-        this.speedX = 0
+        this.balle.setVelocityX(0)
 
         this.balle.setVelocityX(Math.random()>0.5?-100:100)
         this.balle.setVelocityY(0)
     }
 
-    /**
-     *
-     * @param {Joueur} joueur
-     */
     win(joueur){
         //alert('Joueur '+joueur.name+' gagne')
         joueur.score ++;
@@ -121,51 +119,68 @@ class Tableau1 extends Phaser.Scene{
         this.balleAucentre();
     }
 
-
-    initKeyboard(){
-        let me = this
-        this.input.keyboard.on('keydown', function (kevent) {
-            switch (kevent.keyCode) {
-                case Phaser.Input.Keyboard.KeyCodes.S:
-                    me.player1Speed = -5
-                    break;
-                case Phaser.Input.Keyboard.KeyCodes.X:
-                    me.player1Speed = 5
-                    break;
-                case Phaser.Input.Keyboard.KeyCodes.J:
-                    me.player2Speed = -5
-                    break;
-                case Phaser.Input.Keyboard.KeyCodes.N:
-                    me.player2Speed = 5
-                    break;
-            }
-        });
+    initKeyboard() {
+        let me = this;
         this.input.keyboard.on('keyup', function (kevent) {
             switch (kevent.keyCode) {
                 case Phaser.Input.Keyboard.KeyCodes.S:
-                    me.player1Speed = 0
-                    break;
-                case Phaser.Input.Keyboard.KeyCodes.X:
-                    me.player1Speed = 0
+                    me.gauche.setVelocityY(0);
                     break;
                 case Phaser.Input.Keyboard.KeyCodes.J:
-                    me.player2Speed = 0
+                    me.droite.setVelocityY(0);
+                    break;
+                case Phaser.Input.Keyboard.KeyCodes.X:
+                    me.gauche.setVelocityY(0);
                     break;
                 case Phaser.Input.Keyboard.KeyCodes.N:
-                    me.player2Speed = 0
+                    me.droite.setVelocityY(0);
                     break;
             }
-        });
+        })
+        this.input.keyboard.on('keydown', function (kevent) {
+            switch (kevent.keyCode) {
+                case Phaser.Input.Keyboard.KeyCodes.S:
+                    if (me.gauche.y<me.haut.y + 20){
+                        me.gauche.setVelocityY(0)
+                    }
+                    else{
+                        me.gauche.setVelocityY(-300);
+                    }
+                    break;
+                case Phaser.Input.Keyboard.KeyCodes.J:
+                    if (me.droite.y<me.haut.y + 20){
+                        me.droite.setVelocityY(0)
+                    }
+                    else{
+                        me.droite.setVelocityY(-300);
+                    }
+                    break;
+                case Phaser.Input.Keyboard.KeyCodes.X:
+                    if (me.gauche.y+100>me.bas.y){
+                        me.gauche.setVelocityY(0)
+                    }
+                    else {
+                        me.gauche.setVelocityY(300);
+                    }
+                    break;
+                case Phaser.Input.Keyboard.KeyCodes.N:
+                    if (me.droite.y+100>me.bas.y){
+                        me.droite.setVelocityY(0)
+                    }
+                    else {
+                        me.droite.setVelocityY(300);
+                    }
+                    break;
+            }
+        })
     }
+    update() {
 
-    update(){
         if(this.balle.x>this.largeur){
             this.win(this.joueurGauche);
         }
         if(this.balle.x<0){
             this.win(this.joueurDroite);
         }
-        this.player1.y += this.player1Speed
-        this.player2.y += this.player2Speed
     }
 }
